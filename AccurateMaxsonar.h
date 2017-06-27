@@ -7,7 +7,7 @@ class AccurateMaxsonar
 {
 	public:
 		AccurateMaxsonar();
-		AccurateMaxsonar(uint8_t pin, uint8_t sample_size = 9, uint8_t threadhold = 300);
+		AccurateMaxsonar(uint8_t pin, uint8_t sample_size = 9, int threadhold = 50);
 		~AccurateMaxsonar();
 		void initStack();
 
@@ -20,7 +20,7 @@ class AccurateMaxsonar
 	private:
 		uint8_t pin;
 		uint8_t sample_size;
-		uint8_t threadhold;
+		int threadhold;
     	uint8_t ad_sample_delay = 10;
     	int* sample;
     	int* sonar_stack;
