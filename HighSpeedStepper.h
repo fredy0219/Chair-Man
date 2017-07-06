@@ -46,6 +46,8 @@ class HighSpeedStepper
 
 		float decelerate = 1.5f;
 
+		
+
 		void init();
 
 		float fast_tanh_wave( int index){

@@ -56,9 +56,11 @@ void HighSpeedStepper::setSteps(int _steps, int _speed, uint8_t _direction)
 	direction = _direction;
 
 	if(direction == 0)
-		clkWrite(cw_pin,LOW);
+		digitalWrite(cw_pin,LOW);
+		//clkWrite(cw_pin,LOW);
 	if(direction == 1)
-		clkWrite(cw_pin,HIGH);
+		digitalWrite(cw_pin,HIGH);
+		//clkWrite(cw_pin,HIGH);
 
 	_isMoving = true;
 }
