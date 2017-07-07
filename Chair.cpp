@@ -114,65 +114,65 @@ void Chair::decide_motion_after_standup(){
 
 		case MOTION_SINGEL_TIGGER_ONE:
 		case MOTION_TRIPLE_TIGGER_THREE:
-			current_motion = MOTION_BACKWARD; break;
+			current_motion = MOTION_FORWARD; break;
 
 		case MOTION_SINGEL_TIGGER_TWO:
 		case MOTION_TRIPLE_TIGGER_FOUR:
-			current_motion = MOTION_LEFT; break;
+			current_motion = MOTION_RIGHT; break;
 
 		case MOTION_SINGEL_TIGGER_THREE:
 		case MOTION_TRIPLE_TIGGER_TWO:
-			current_motion = MOTION_RIGHT; break;
+			current_motion = MOTION_BACKWARD; break;
 
 		case MOTION_SINGEL_TIGGER_FOUR:
 		case MOTION_TRIPLE_TIGGER_ONE:
-			current_motion = MOTION_FORWARD; break;
+			current_motion = MOTION_LEFT; break;
 		//
 
 		//--Special motion decide
 			//  TWIN BEWTEEN
 		case MOTION_TWIN_BEWTEEN_TIGGER_ONE_TWO:
 			if(sonar[0].getSample() > sonar[1].getSample())
-				current_motion = MOTION_LEFT;
+				current_motion = MOTION_RIGHT;
 			else
-				current_motion = MOTION_BACKWARD;
+				current_motion = MOTION_FORWARD;
 			break;
 
 		case MOTION_TWIN_BEWTEEN_TIGGER_TWO_THERE:
 			if(sonar[1].getSample() > sonar[2].getSample())
-				current_motion = MOTION_FORWARD;
+				current_motion = MOTION_BACKWARD;
 			else
-				current_motion = MOTION_LEFT;
+				current_motion = MOTION_RIGHT;
 			break;
 
 		case MOTION_TWIN_BEWTEEN_TIGGER_THREE_FOUR:
 			if(sonar[2].getSample() > sonar[3].getSample())
-				current_motion = MOTION_RIGHT;
+				current_motion = MOTION_LEFT;
 			else
-				current_motion = MOTION_FORWARD;
+				current_motion = MOTION_BACKWARD;
 			break;		
 
 		case MOTION_TWIN_BEWTEEN_TIGGER_FOUR_ONE:
 			if(sonar[3].getSample() > sonar[0].getSample())
-				current_motion = MOTION_BACKWARD;
+				current_motion = MOTION_FORWARD;
 			else
-				current_motion = MOTION_RIGHT;
+				current_motion = MOTION_LEFT;
 			break;
 			//
 
 			//  TWIN SYMMETRY
 		case MOTION_TWIN_SYMMETRY_TIGGER_ONE_THREE:
 			if(sonar[1].getSample() > sonar[3].getSample())
-				current_motion = MOTION_RIGHT;
-			else
 				current_motion = MOTION_LEFT;
+			else
+				current_motion = MOTION_RIGHT;
 			break;
 
 		case MOTION_TWIN_SYMMETRY_TIGGER_TWO_FOUR:
 			if(sonar[0].getSample() > sonar[2].getSample())
-				current_motion = MOTION_FORWARD;
-			else
 				current_motion = MOTION_BACKWARD;
+			else
+				current_motion = MOTION_FORWARD;
 			break;	
 			//	
 		//	
@@ -206,10 +206,10 @@ void Chair::motion_init(){
 	delay(1000);
 
 	// move to init postion
-	stepper[0].setSteps(50,3000,STEPPER_0_DOWN);
-	stepper[1].setSteps(50,3000,STEPPER_1_DOWN);
-	stepper[2].setSteps(50,3000,STEPPER_2_DOWN);
-	stepper[3].setSteps(50,3000,STEPPER_3_DOWN);
+	stepper[0].setSteps(15,3000,STEPPER_0_DOWN);
+	stepper[1].setSteps(15,3000,STEPPER_1_DOWN);
+	stepper[2].setSteps(15,3000,STEPPER_2_DOWN);
+	stepper[3].setSteps(15,3000,STEPPER_3_DOWN);
 
 	while( this->isMoving() ){
 		this->run();
@@ -225,8 +225,11 @@ void Chair::motion_standup(){
 
 	Serial.println("motion_standup");
 
-	stepper[0].setSteps(200,3000,STEPPER_0_DOWN);
-	stepper[1].setSteps(200,3000,STEPPER_1_DOWN);
+	stepper[0].setSteps(440,3000,STEPPER_0_DOWN);
+	stepper[1].setSteps(440,3000,STEPPER_1_DOWN);
+
+	stepper[2].setSteps(180,3000,STEPPER_2_DOWN);
+	stepper[3].setSteps(180,3000,STEPPER_3_DOWN);
 
 	while(isMoving()){
 		this->run();
@@ -238,8 +241,11 @@ void Chair::motion_sitdown(){
 
 	Serial.println("motion_sitdown");
 
-	stepper[0].setSteps(200,3000,STEPPER_0_UP);
-	stepper[1].setSteps(200,3000,STEPPER_1_UP);
+	stepper[0].setSteps(440,3000,STEPPER_0_UP);
+	stepper[1].setSteps(440,3000,STEPPER_1_UP);
+
+	stepper[2].setSteps(180,3000,STEPPER_2_UP);
+	stepper[3].setSteps(180,3000,STEPPER_3_UP);
 
 	while( isMoving()){
 		this->run();
@@ -252,12 +258,12 @@ void Chair::motion_template(){
 	Serial.println("motion_template");
 	Serial.println(current_motion);
 
-	static uint8_t max_split = 6;
+	static uint8_t max_split = 8;
 
 	uint8_t split_motion_number = 0;
 	unsigned long nextTimer = 0;
 
-	int timer_table[] = {2000,2000,2000,2000,2000,2000};
+	int timer_table[] = {1000,1000,1000,1000,1000,1000,1000,1000};
 
 	bool finish = false;
 	while( !finish ){
@@ -272,10 +278,10 @@ void Chair::motion_template(){
 			if(t > timer_table[split_motion_number]){
 
 				switch(current_motion){
-					case MOTION_LEFT: motion_forward( split_motion_number ); nextTimer = millis(); break;
-					case MOTION_RIGHT: motion_forward( split_motion_number ); nextTimer = millis(); break;
+					case MOTION_LEFT: motion_left( split_motion_number ); nextTimer = millis(); break;
+					case MOTION_RIGHT: motion_right( split_motion_number ); nextTimer = millis(); break;
 					case MOTION_FORWARD: motion_forward( split_motion_number ); nextTimer = millis(); break;
-					case MOTION_BACKWARD: motion_forward( split_motion_number ); nextTimer = millis(); break;
+					case MOTION_BACKWARD: motion_backward( split_motion_number ); nextTimer = millis(); break;
 				}
 				split_motion_number++; 
 			}
@@ -299,106 +305,118 @@ void Chair::motion_left(uint8_t number){
 
 	switch(number){
 		case 0:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[0].setSteps(180,5000,STEPPER_0_UP);
+			stepper[3].setSteps(180,5000,STEPPER_3_UP); break;
 		case 1:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[1].setSteps(180,3000,STEPPER_1_UP);
+			stepper[2].setSteps(180,3000,STEPPER_2_UP); break;
 		case 2:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[0].setSteps(180,3000,STEPPER_0_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
 		case 3:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[1].setSteps(180,3000,STEPPER_1_DOWN);
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN); break;
 		case 4:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[0].setSteps(180,3000,STEPPER_0_UP);
+			stepper[3].setSteps(180,3000,STEPPER_3_UP); break;
 		case 5:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
-			
-		case 6: // finsh all split motion
-			break;
+			stepper[1].setSteps(180,3000,STEPPER_1_UP);
+			stepper[2].setSteps(180,3000,STEPPER_2_UP); break;
+		case 6:
+			stepper[0].setSteps(180,3000,STEPPER_0_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
+		case 7:
+			stepper[1].setSteps(180,3000,STEPPER_1_DOWN);
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN); break;
 	}
 }
 void Chair::motion_right( uint8_t number ){
 
 	switch(number){
 		case 0:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[1].setSteps(180,5000,STEPPER_1_UP);
+			stepper[2].setSteps(180,5000,STEPPER_2_UP); break;
 		case 1:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[0].setSteps(180,3000,STEPPER_0_UP);
+			stepper[3].setSteps(180,3000,STEPPER_3_UP); break;
 		case 2:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[1].setSteps(180,3000,STEPPER_1_DOWN);
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN); break;
 		case 3:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[0].setSteps(180,3000,STEPPER_0_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
 		case 4:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[1].setSteps(180,3000,STEPPER_1_UP);
+			stepper[2].setSteps(180,3000,STEPPER_2_UP); break;
 		case 5:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
-			
-		case 6: // finsh all split motion
-			break;
+			stepper[0].setSteps(180,3000,STEPPER_0_UP);
+			stepper[3].setSteps(180,3000,STEPPER_3_UP); break;
+		case 6:
+			stepper[1].setSteps(180,3000,STEPPER_1_DOWN);
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN); break;
+		case 7:
+			stepper[0].setSteps(180,3000,STEPPER_0_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
 	}
 }
 void Chair::motion_forward( uint8_t number ){
 
 	switch(number){
 		case 0:
-			stepper[0].setSteps(100,3000,STEPPER_0_DOWN);
-			stepper[1].setSteps(100,3000,STEPPER_1_DOWN); break;
+			stepper[0].setSteps(220,5000,STEPPER_0_UP);
+			stepper[1].setSteps(220,5000,STEPPER_1_UP); break;
 		case 1:
-			stepper[2].setSteps(100,3000,STEPPER_2_DOWN);
-			stepper[3].setSteps(100,3000,STEPPER_3_DOWN); break;
+			stepper[2].setSteps(180,3000,STEPPER_2_UP);
+			stepper[3].setSteps(180,3000,STEPPER_3_UP); break;
 		case 2:
-			stepper[0].setSteps(100,3000,STEPPER_0_UP);
-			stepper[1].setSteps(100,3000,STEPPER_1_UP); break;
+			stepper[0].setSteps(220,3000,STEPPER_0_DOWN);
+			stepper[1].setSteps(220,3000,STEPPER_1_DOWN); break;
 		case 3:
-			stepper[2].setSteps(100,3000,STEPPER_2_UP);
-			stepper[3].setSteps(100,3000,STEPPER_3_UP); break;
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
 		case 4:
-			//stepper[0].setSteps(100,1000,STEPPER_0_DOWN);
-			//stepper[1].setSteps(100,1000,STEPPER_1_DOWN); break;
-			break;
+			stepper[0].setSteps(220,3000,STEPPER_0_UP);
+			stepper[1].setSteps(220,3000,STEPPER_1_UP); break;
 		case 5:
-			//stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			//stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
-			break;
-		case 6: // finsh all split motion
-			break;
+			stepper[2].setSteps(180,3000,STEPPER_2_UP);
+			stepper[3].setSteps(180,3000,STEPPER_3_UP); break;
+		case 6:
+			stepper[0].setSteps(220,3000,STEPPER_0_DOWN);
+			stepper[1].setSteps(220,3000,STEPPER_1_DOWN); break;
+		case 7:
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
 	}
 }
 void Chair::motion_backward( uint8_t number ){
 
 	switch(number){
 		case 0:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[2].setSteps(180,5000,STEPPER_2_UP);
+			stepper[3].setSteps(180,5000,STEPPER_3_UP); break;
 		case 1:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[0].setSteps(220,3000,STEPPER_0_UP);
+			stepper[1].setSteps(220,3000,STEPPER_1_UP); break;
 		case 2:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
 		case 3:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[0].setSteps(220,3000,STEPPER_0_DOWN);
+			stepper[1].setSteps(220,3000,STEPPER_1_DOWN); break;
 		case 4:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
+			stepper[2].setSteps(180,3000,STEPPER_2_UP);
+			stepper[3].setSteps(180,3000,STEPPER_3_UP); break;
 		case 5:
-			stepper[0].setSteps(100,1000,STEPPER_0_UP);
-			stepper[1].setSteps(100,1000,STEPPER_0_UP); break;
-			
-		case 6: // finsh all split motion
-			break;
+			stepper[0].setSteps(220,3000,STEPPER_0_UP);
+			stepper[1].setSteps(220,3000,STEPPER_1_UP); break;
+		case 6:
+			stepper[2].setSteps(180,3000,STEPPER_2_DOWN);
+			stepper[3].setSteps(180,3000,STEPPER_3_DOWN); break;
+		case 7:
+			stepper[0].setSteps(220,3000,STEPPER_0_DOWN);
+			stepper[1].setSteps(220,3000,STEPPER_1_DOWN); break;
 	}
+	
 }
 
 void Chair::interrupt(uint8_t index){
